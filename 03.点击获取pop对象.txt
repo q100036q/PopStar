@@ -1,0 +1,60 @@
+HelloWorldScene.h
+class HelloWorld : public cocos2d::Layer
+{
+//********************
+	public:
+	//监听手势识别
+	virtual bool onTouchBegan(cocos2d::Touch *t,cocos2d::Event *e);
+	private:
+	//点击得到pop对象
+	PopSprite *getPopStarSprite(cocos2d::Size size,cocos2d::Point touch);
+}
+
+HelloWorldScene.cpp
+bool HelloWorld::init(){
+//*************
+	//设置监听
+	auto touchListener = EventListenerTouchOneByOne::create();
+	//设置回调监听点击位置
+	touchListener->onTouchBegan = CC_CALLBACK_2(HelloWorld::onTouchBegan,this);
+	//_eventDispatcher是director 关联的事件派发器，addEventListenerWithSceneGraphPriority是给一个指定的事件添加一个事件侦听器
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener,this);
+}
+
+
+//监听手势识别
+bool HelloWorld::onTouchBegan(cocos2d::Touch *t,cocos2d::Event *e){
+	//获取触摸的X和Y值
+	Point touchPo = t->getLocation();
+	//获取屏幕大小
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	//通过传入上面两个值得到触摸对象位置
+	PopSprite *pops = getPopStarSprite(visibleSize,touchPo);
+
+	return true;
+}
+
+//点击得到pop对象
+PopSprite *HelloWorld::getPopStarSprite(cocos2d::Size size,cocos2d::Point touch){
+	//求出每个pop的宽度跟高度
+	//宽和高是一样的
+	int lon = (size.width-28)/10;
+
+	//求出点击的X的位置
+	//即求出在横轴上第几个色块
+	float x = (touch.x-28)/lon;
+	//求出点击的Y的位置
+	//求纵轴上第几个色块
+	float y = (touch.y - size.height/6)/lon;
+
+	if(x<10 && y<10 && x>=0 &&y>=0)
+	{
+		int x1 = (touch.x-28)/lon;
+		int y1 = (touch.y - size.height/6)/lon;
+		//测试是否正确
+		log("%d,%d",x1,y1);
+		return popStarSprite[x1][y1];
+	}
+	else 
+		return NULL;
+}

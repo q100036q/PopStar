@@ -1,0 +1,142 @@
+HelloWorldScene.cpp
+bool HelloWorld::init()
+{
+//************
+//创建一个背景
+	auto layerColorBG = cocos2d::LayerColor::create(cocos2d::Color4B(180,170,160,255));
+	this->addChild(layerColorBG);
+}
+//创建一个popstar精灵
+PopSprite.h
+
+#ifndef __PopStar__PopSprite__
+#define __PopStar__PopSprite__
+
+#include "cocos2d.h"
+
+class PopSprite : public cocos2d::Sprite{
+public:
+	//初始化游戏的数值，宽度，高度，X轴，Y轴
+	static PopSprite *createPopSprite(int numbers,int width,int height,float PopSpriteX,float PopSpriteY);
+	virtual bool init();
+	CREATE_FUNC(PopSprite);
+	
+	//获取数字
+	int getNumber();
+	//设置数字
+	void setNumber(int num);
+	
+	//获取色块的坐标
+	cocos2d::Point getColorBGPoint();
+
+	//获取pop的位置
+	int popX,popY;
+	//获取X，Y
+	int getPopX();
+	int getPopY();
+	//设置X,Y
+	int setPopX(int x);
+	int setPopY(int y);
+public:
+	//显示颜色
+	int number;
+	void enemyInit(int numbers,int width,int height,float PopSpriteX,float PopSpriteY);
+	//显示的背景
+	cocos2d::LayerColor *layerColorBG;
+}
+
+#endif
+//实现精灵类
+PopSprite.cpp
+
+#include "PopSprite.h"
+
+USING_NS_CC;
+
+//初始化游戏的数值，宽度，高度，X轴，Y轴
+PopSprite *PopSprite::createPopSprite(int numbers,int width,int height,float PopSpriteX,float PopSpriteY){
+	PopSprite *enemy = new PopSprite();
+	if (enemy && enemy->init()){
+		enemy->autorelease();
+		enemy->enemyInit(numbers,width,height,PopSpriteX,PopSpriteY);
+		return enemy;
+	}
+	CC_SAFE_DELETE(enemy);
+	return NULL;
+}
+
+bool PopSprite::init(){
+	if(!Sprite::init()){
+		return false;
+	}
+	return true;
+}
+
+void PopSprite::enemyInit(int numbers,int width,int height,float PopSpriteX,float PopSpriteY){
+	//设置初始化的值
+	number = numbers;
+	popX = PopSpriteX;
+	popY = PopSpriteY;
+
+	//加入游戏每个Pop的背景颜色
+	//减5是为了每个色块之间留一条缝隙
+	layerColorBG = cocos2d::LayerColor::create(cocos2d::Color4B(200,190,180,255),width-5,height-5);
+	//layerColorBG->setAnchorPoint(Point(0.5,0.5));
+	layerColorBG->setPosition(Point(popX,popY));
+
+	this->addChild(layerColorBG);
+}
+
+//获取色块的坐标
+cocos2d::Point PopSprite::getColorBGPoint(){
+	return layerColorBG->getPosition();
+}
+
+//获取数字
+int PopSprite::getNumber(){
+	return number;
+}
+
+//设置数字
+void PopSprite::setNumber(int num){
+	number = num;
+	//判断数字来调整色块的颜色
+
+	if(number == -1){
+		layerColorBG->setColor(cocos2d::Color3B(200,190,180));
+	}
+	if(number == 0){
+		layerColorBG->setColor(cocos2d::Color3B(250,230,40));
+	}
+	if(number == 1){
+		layerColorBG->setColor(cocos2d::Color3B(40,180,250));
+	}
+	if(number == 2){
+		layerColorBG->setColor(cocos2d::Color3B(130,220,110));
+	}
+	if(number == 3){
+		layerColorBG->setColor(cocos2d::Color3B(250,80,130));
+	}
+	if(number == 4){
+		layerColorBG->setColor(cocos2d::Color3B(180,50,250));
+	}
+}
+
+//获取X，Y
+int PopSprite::getPopX(){
+	return popX;
+}
+
+int PopSprite::getPopY(){
+	return popY;
+}
+
+//设置X,Y
+void PopSprite::setPopX(int x){
+	popX = x;
+
+}
+
+void PopSprite::setPopY(int y){
+	popY = y;
+}

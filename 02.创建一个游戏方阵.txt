@@ -1,0 +1,84 @@
+HelloWorldScene.h
+//为了引入PopSprite类型
+#include "PopSprite.h"
+class HelloWorld : public cocos2d::Layer
+{
+//********************
+//自动创建游戏中的pop10*10的矩形方阵,传入参数为屏幕大小
+	void autoCretaePopSprite(cocos2d::Size size);
+
+private:
+	//定义pop数组
+	PopSprite *popStarSprite[10][10];
+}
+
+HelloWorldScene.cpp
+#include "HelloWorldScene.h"
+
+USING_NS_CC;
+
+Scene* HelloWorld::createScene()
+{
+    // 'scene' is an autorelease object
+    auto scene = Scene::create();
+    
+    // 'layer' is an autorelease object
+    auto layer = HelloWorld::create();
+
+    // add layer as a child to scene
+    scene->addChild(layer);
+
+    // return the scene
+    return scene;
+}
+
+// on "init" you need to initialize your instance
+bool HelloWorld::init()
+{
+    //////////////////////////////
+    // 1. super init first
+    if ( !Layer::init() )
+    {
+        return false;
+    }
+    
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+	auto layerColorBG = cocos2d::LayerColor::create(cocos2d::Color4B(180,170,160,255));
+	this->addChild(layerColorBG);
+
+    //自动创建游戏中的pop10*10的矩形方阵
+	autoCretaePopSprite(visibleSize);
+    return true;
+}
+
+void HelloWorld::autoCretaePopSprite(cocos2d::Size size){
+	//加入随机种子
+	srand(((unsigned)time(NULL)));
+	//求出每一个pop的宽度和高度
+	//左边留住28的宽度
+	//因为是正方形，宽度跟高度是一样的
+	int lon = (size.width-28)/10;
+	//循环，创建10*10的单元格
+	for(int j = 0; j<10; j++){
+		for(int i = 0; i<10; i++){
+			//每次生成随机数（范围0~4），对应不同的颜色
+			int maxX = 5;
+			int minX = 0;
+			//获取一个随机数 
+			int rangeX = maxX - minX;
+			int actualX = (rand()%rangeX)+minX;
+			//参数分别是：初始化颜色为-1，宽度，高度，X轴坐标为色块宽度*色块个数+20，Y轴坐标为色块高度*色块个数+20+从整个屏幕的1/6初创建
+			PopSprite *pop = PopSprite::createPopSprite(-1,lon,lon,lon*j+20,lon*i+20+size.height/6);
+			//位置
+			pop->setPopX(i); 
+			pop->setPopY(j);
+			//颜色
+			pop->setNumber(actualX);
+			
+			addChild(pop,0);
+
+			//pop加入到数组中
+			popStarSprite[j][i] = pop;
+		}
+	}
+}

@@ -1,0 +1,81 @@
+HelloWorldScene.h
+class HelloWorld : public cocos2d::Layer
+{
+//********************
+private:
+	//让空白部分被上面填充（往下落）
+	void reDiessPopStar();
+	void reDiessPopStarRun(int x);
+	//左右移动
+	void reDissPopStarRL(int x);
+}
+
+
+//让空白部分被上面填充（往下落）
+//一列列进行检测，有空格那么就交换
+void HelloWorld::reDiessPopStar(){
+	for(int x = 0; x<10; x++){
+		//因为需要循环调用自己，所以新建一个方法
+		reDiessPopStarRun(x);
+	}
+	//完成上下移动发后，判断是否需要左右移动
+	//这里使用的是自己的方法，解决了两列同时消失只向左移动一列的bug。。。但是，这里只做到了可以同时移动两列
+		for(int x = 0; x<10; x++){
+			reDissPopStarRL(x);
+		}
+}
+
+void HelloWorld::reDiessPopStarRun(int x){
+	//检测出每列的空格数，存入number
+	int number = 0;
+	for(int k = 0; k<10; k++){
+		if(popStarSprite[x][k]->getNumber() == -1){
+			number++;
+		}
+	}
+	//判断空格是否大于1
+	if(number>0){
+		for(int y = 0; y<10; y++){
+			//判断是否要继续回调自己
+			if(popStarSprite[x][y]->getNumber() == -1){
+				//对空格进行判断，值是不是等于number，如果是，那么该空格是最顶上一个就不需要再回调自己循环了，跳出
+				if((10-popStarSprite[x][y]->getPopY())>number){
+					//将空格替换
+					for(int s = y; s<10; s++){
+						//如果是最顶上的的，那么替换成空格
+						if(s+1 == 10){
+							popStarSprite[x][s]->setNumber(-1);
+						}else{
+							//如果不是，那么用上面的替换
+							popStarSprite[x][s]->setNumber(popStarSprite[x][s+1]->getNumber());
+						}
+					}
+					reDiessPopStarRun(x);
+				}else{
+					break;
+				}
+			}
+		}
+	}
+}
+void HelloWorld::reDissPopStarRL(int x){
+		//检测出每列的空格数
+		int number = 0;
+		for(int k = 0; k<10; k++){
+			if(popStarSprite[x][k]->getNumber() == -1){
+				number++;
+			}
+		}
+	
+		//判断空格是否为10，即整列都为空
+		if(number == 10){
+			for(int z = 0; z<10; z++){
+				//将空格替换
+				for(int s = x; s<9; s++){	
+					//因为向左移动，所以s小于9
+					popStarSprite[s][z]->setNumber(popStarSprite[s+1][z]->getNumber());
+					popStarSprite[s+1][z]->setNumber(-1);
+				}				
+			}	
+	}
+}

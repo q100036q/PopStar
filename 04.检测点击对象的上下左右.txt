@@ -1,0 +1,99 @@
+HelloWorldScene.h
+class HelloWorld : public cocos2d::Layer
+{
+//********************
+private:
+	//创建一个数组来存放点击的pop
+	cocos2d::__Array *poparr;
+
+	//通过传递过来的点击pop对象获取他的上下左右的数据
+	cocos2d::__Array *checkPopAround(PopSprite *pop);
+}
+
+HelloWorldScene.cpp
+bool HelloWorld::onTouchBegan(cocos2d::Touch *t,cocos2d::Event *e){
+//******************
+//初始化数组
+	poparr = cocos2d::__Array::create();
+	
+	if(pops != NULL){
+	//点击的时候检测
+		//log("%d,%d",pops->getPopX(),pops->getPopY());
+		poparr = checkPopAround(pops);
+	}
+	
+}
+
+//通过传递过来的点击pop对象获取他的上下左右的数据
+cocos2d::__Array *HelloWorld::checkPopAround(PopSprite *pop){
+	cocos2d::__Array *arr = cocos2d::__Array::create();
+	//如果周围对象有两个以上的话，就说明自己对象也返回，如果只有一个那么忽略这次点击
+	bool isDoublePop = false;
+
+	//判断点击位置往上的相同数
+	int up = pop->getPopY();
+	for(int yu = up+1; yu<10; yu++){
+		//当X的位置和颜色与上一个色块的X位置和颜色相同时
+		if(popStarSprite[pop->getPopX()][up]->getNumber() == popStarSprite[pop->getPopX()][yu]->getNumber()){
+			
+			//addObject添加指定的对象
+			arr->addObject(popStarSprite[pop->getPopX()][yu]);
+			//设置颜色数字变为-1
+			popStarSprite[pop->getPopX()][yu]->setNumber(-1);
+			isDoublePop = true;
+		}else{
+			break;
+		}
+	}
+	//判断点击位置往下的相同数
+	int down = pop->getPopY();
+	for(int yd = down-1; yd>=0; yd--){
+		//当X的位置和颜色与上一个色块的X位置和颜色相同时
+		if(popStarSprite[pop->getPopX()][down]->getNumber() == popStarSprite[pop->getPopX()][yd]->getNumber()){
+			
+			//addObject添加指定的对象
+			arr->addObject(popStarSprite[pop->getPopX()][yd]);
+			//设置颜色数字变为-1
+			popStarSprite[pop->getPopX()][yd]->setNumber(-1);
+			isDoublePop = true;
+		}else{
+			break;
+		}
+	}
+	//判断点击位置往左的相同数
+	int left = pop->getPopX();
+	for(int yl = left-1; yl>=0; yl--){
+		//当X的位置和颜色与上一个色块的X位置和颜色相同时
+		if(popStarSprite[left][pop->getPopY()]->getNumber() == popStarSprite[yl][pop->getPopY()]->getNumber()){
+			
+			//addObject添加指定的对象
+			arr->addObject(popStarSprite[yl][pop->getPopY()]);
+			//设置颜色数字变为-1
+			popStarSprite[yl][pop->getPopY()]->setNumber(-1);
+			isDoublePop = true;
+		}else{
+			break;
+		}
+	}
+	//判断点击位置往右的相同数
+	int right = pop->getPopX();
+	for(int yr = right+1; yr<10; yr++){
+		//当X的位置和颜色与上一个色块的X位置和颜色相同时
+		if(popStarSprite[right][pop->getPopY()]->getNumber() == popStarSprite[yr][pop->getPopY()]->getNumber()){
+			
+			//addObject添加指定的对象
+			arr->addObject(popStarSprite[yr][pop->getPopY()]);
+			//设置颜色数字变为-1
+			popStarSprite[yr][pop->getPopY()]->setNumber(-1);
+			isDoublePop = true;
+		}else{
+			break;
+		}
+	}
+	//判断点击到自己的情况
+	if(isDoublePop){
+		arr->addObject(popStarSprite[pop->getPopX()][pop->getPopY()]);
+		popStarSprite[pop->getPopX()][pop->getPopY()]->setNumber(-1);
+	}
+	return arr;
+}
